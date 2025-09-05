@@ -20,16 +20,22 @@ const wss = new WebSocketServer({server})
 wss.on('connection',(ws) =>{
   console.log('Client Connected');
 
-  ws.send('Welcome! You are connected to websocket server.')
-})
+  ws.send('Welcome! You are connected to websocket server.');
 
+  //when client sends a message
+  ws.on('message',(message)=>{
+    console.log(`Received: ${message}`);
 
+    wss.clients.forEach((client)=>{
+      if(client.readyState === ws.OPEN){
+        client.send(message.toString());
+      }
+    });
+  });
+  ws.on('close',()=>console.log('Client disconnected'));
+});
 
-
-
-
-
-
+//Start server
 
 
 app.listen(port, host, () => {
